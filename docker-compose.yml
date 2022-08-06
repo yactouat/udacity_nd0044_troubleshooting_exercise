@@ -1,0 +1,41 @@
+volumes:
+  todos-vol:
+
+services:
+
+  pgsql:
+    image: postgres:12.11
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: pwd # environment variable that sets the superuser password for PostgreSQL
+      POSTGRES_USER: usr # variable that will create the specified user with superuser power and a database with the same name
+      POSTGRES_DB: todos
+    volumes:
+      - todos-vol:/var/lib/postgresql/data
+      # - ./scripts:/docker-entrypoint-initdb.d/
+    ports:
+      - 5432:5432
+
+
+  pgadmin:
+    image: dpage/pgadmin4:6.11
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_PASSWORD: pwd # environment variable that sets the superuser password for PostgreSQL
+      PGADMIN_DEFAULT_EMAIL: test@test.com
+      PGADMIN_LISTEN_PORT: 8080
+    ports:
+      - 8080:8080
+    depends_on:
+      - pgsql
+
+  python:
+    build: 
+      context: .
+      dockerfile: ./docker/python.Dockerfile
+    depends_on:
+      - pgsql
+    ports:
+      - 80:5000
+    volumes:
+      - ./app:/usr/src/app
