@@ -1,0 +1,99 @@
+<html>
+  <head>
+    <title>Todo App</title>
+      <style>
+      .hidden {
+        display: none;
+      }
+      .strikedThrough {
+        text-decoration: line-through;
+      }
+      .lists-wrapper, .todos-wrapper {
+        display: inline-block;
+        vertical-align: top;
+        min-width: 300px;
+      }
+      .todos, .lists {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        width: 300px;
+      }
+      .todoItem {
+        display: flex;
+        align-items: center;
+      }
+      .listItem {
+        display: flex;
+        align-items: center;
+      }
+      .todoDescription, .listItem a {
+        width: 70px;
+      }
+      .todoButton, .listButton {
+        -webkit-appearance: none;
+        border: none;
+        outline: none;
+        color: red;
+        cursor: pointer;
+        font-size: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>yTodos</h1>
+    <div class="lists-wrapper">
+      <h2>TODOS LISTS</h2>
+      <form id="list_form">
+        <input type="text" id="nameInput" />
+        <input type="submit" value="Create List" />
+      </form>
+      <ul class="lists">
+        {% for list in lists %}
+            <li class="listItem" id="{{ list['data'].id }}_list_li">
+              <input 
+                class="listCheckbox" 
+                type="checkbox" 
+                name="activeListCompleted" 
+                id="{{ list['data'].id }}_listCheckbox"
+                data-id="listCheckbox_{{ list['data'].id }}"
+                {% if list['completed'] == True %} checked {% endif %}
+              >
+              <a href="/lists/{{ list['data'].id }}">
+                {{ list["data"].name }}
+              </a>
+              <button id="{{ list['data'].id }}_list_button" class="listButton">&cross;</button>
+            </li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="todos-wrapper">
+      <h2>TODOS</h2>
+      <form id="todo_form">
+        <input type="text" id="descriptionInput" />
+        <input type="submit" value="Create Todo" id="create_todo_btn" />
+      </form>
+      <ul id="{{ activeList.id }}_ul" class="todos" data-id="ul_{{ activeList.id }}">
+        <h3 id="activeListNameH3">{{ activeList.name }}</h3>
+        {% for todo in activeListTodos %}
+          <li id="{{ todo.id }}_li" class="todoItem">
+            <input 
+              class="todoCheckbox" 
+              type="checkbox" 
+              name="completedInput" 
+              id="{{ todo.id }}_todocheckbox"
+              {% if todo.completed %} checked {% endif %}
+            >
+            <span data-id="span_{{ todo.id }}" class="todoDescription {% if todo.completed %} strikedThrough {% endif %}">{{ todo.description }}</span>
+            <button id="{{ todo.id }}_button" class="todoButton">&cross;</button>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="hidden" id="error" >Something went wrong!</div>
+
+    <script src="/static/index.js"></script>
+
+  </body>
+</html>
